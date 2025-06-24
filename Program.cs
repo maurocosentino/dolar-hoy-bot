@@ -28,17 +28,13 @@ cotizacionService.IniciarChequeoCotizacion(TimeSpan.FromMinutes(1));
 using var cts = new CancellationTokenSource();
 
 bot.StartReceiving(
-    new DefaultUpdateHandler(
+    updateHandler: new DefaultUpdateHandler(
         async (botClient, update, token) =>
             await UpdateHandler.HandleUpdateAsync(botClient, update, token, suscripcionesService, cotizacionService),
         async (botClient, exception, token) =>
-            await UpdateHandler.HandleErrorAsync(botClient, exception, token)
-    ),
-    new ReceiverOptions(),
-    cts.Token
-);
+            await UpdateHandler.HandleErrorAsync(botClient, exception, token)),
+    receiverOptions: new ReceiverOptions(),
+    cancellationToken: cts.Token);
 
-Console.WriteLine("Bot en ejecución. Presioná Enter para salir.");
-Console.ReadLine();
-
-cts.Cancel();
+Console.WriteLine("Bot en ejecución...");
+await Task.Delay(Timeout.Infinite); // mantiene el proceso vivo
