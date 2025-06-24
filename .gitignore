@@ -1,0 +1,25 @@
+# Visual Studio / .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# Configuraciones locales
+appsettings.json
+suscripciones.json
+
+# Archivos de logs
+*.log
+
+# Paquetes NuGet
+*.nupkg
+packages/
+
+# Otros
+*.DS_Store
