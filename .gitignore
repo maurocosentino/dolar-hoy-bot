@@ -10,6 +10,8 @@ obj/
 # Rider
 .idea/
 
+.env
+
 # Configuraciones locales
 appsettings.json
 suscripciones.json
