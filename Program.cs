@@ -10,7 +10,7 @@ var config = new ConfigurationBuilder()
     .Build();
 
 // Intenta obtener el token desde JSON y luego desde las variables de entorno
-string botToken = config["Telegram:BotToken"] ?? config["BOT_TOKEN"];
+var botToken = config["Telegram:BotToken"] ?? Environment.GetEnvironmentVariable("BOT_TOKEN");
 
 if (string.IsNullOrEmpty(botToken))
 {
