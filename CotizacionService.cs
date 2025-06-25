@@ -40,13 +40,14 @@ public class CotizacionService
 
             if (_ultimaCotizacion == null || !cotizacionNueva.Equals(_ultimaCotizacion))
             {
+                var cotizacionAnterior = _ultimaCotizacion; // guardar antes de pisar
                 _ultimaCotizacion = cotizacionNueva;
 
-                // var texto = FormatearTextoCotizacion(cotizacionNueva, _ultimaCotizacion);
                 var texto =
-                         "Hola! Aquí está la cotización del dólar de hoy:\n\n" +
-                         FormatearTextoCotizacion(cotizacionNueva, _ultimaCotizacion) +
-                        "\n\nUsa los botones para activar o cancelar el mensaje automático.";
+                    "Hola! Aquí está la cotización del dólar de hoy:\n\n" +
+                    FormatearTextoCotizacion(cotizacionNueva, cotizacionAnterior) + // comparación real
+                    "\n\nUsa los botones para activar o cancelar el mensaje automático.";
+
 
 
                 foreach (var chatId in _suscripciones.Suscripciones.Where(kv => kv.Value).Select(kv => kv.Key))
@@ -100,6 +101,14 @@ public class CotizacionService
             actual > previo ? " 🔺" :
             actual < previo ? " 🔻" : "➖";
 
+        // Detectar el sistema operativo y usar el ID de zona correcto
+        string zonaId = OperatingSystem.IsWindows()
+            ? "Argentina Standard Time"
+            : "America/Argentina/Buenos_Aires";
+
+        var zonaAR = TimeZoneInfo.FindSystemTimeZoneById(zonaId);
+        var ahoraAR = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaAR);
+
         return
             $"💵 *Cotización del dólar hoy en Argentina:*\n\n" +
             $"🏛️ *Dólar Oficial*\n" +
@@ -108,8 +117,10 @@ public class CotizacionService
             $"🔹 *Dólar Blue*\n" +
             $"▪️ Compra: `${cot.BlueCompra}`{Flecha(cot.BlueCompra, anterior?.BlueCompra)}\n" +
             $"▪️ Venta: `${cot.BlueVenta}`{Flecha(cot.BlueVenta, anterior?.BlueVenta)}\n\n" +
-            $"🕒 _Actualizado: {DateTime.Now:dd/MM/yyyy HH:mm}_";
+            $"🕒 _Actualizado: {ahoraAR:dd/MM/yyyy HH:mm}_";
     }
+
+
 
 
 }
