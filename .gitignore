@@ -17,8 +17,6 @@ appsettings.json
 BotCotizacionWeb/appsettings.json
 suscripciones.json
 
-# Ignorar migraciones EF Core
-BotCotizacionWeb/Migrations/
 
 # Archivos de logs
 *.log
