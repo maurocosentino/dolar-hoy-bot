@@ -47,7 +47,15 @@ public static class UpdateHandler
                     if (cotizacion != null)
                     {
                         var texto = CotizacionService.FormatearTextoCotizacion(cotizacion);
-                        await botClient.SendMessage(chatId, texto, ParseMode.Markdown, cancellationToken: token);
+                        var buttons = new InlineKeyboardMarkup(new[]
+                        {
+                            new[]
+                            {
+                             InlineKeyboardButton.WithCallbackData("Inicio", "start")
+                            }
+                        });
+
+                        await botClient.SendMessage(chatId, texto, ParseMode.Markdown, replyMarkup: buttons, cancellationToken: token);
                     }
                     else
                     {
@@ -98,13 +106,22 @@ public static class UpdateHandler
                     if (cotizacionCB != null)
                     {
                         var texto = CotizacionService.FormatearTextoCotizacion(cotizacionCB);
-                        await botClient.SendMessage(chatId, texto, ParseMode.Markdown);
+                        var buttons = new InlineKeyboardMarkup(new[]
+                        {
+                            new[]
+                            {
+                                InlineKeyboardButton.WithCallbackData("Inicio", "start")
+                            }
+                        });
+
+                        await botClient.SendMessage(chatId, texto, ParseMode.Markdown, replyMarkup: buttons);
                     }
                     else
                     {
                         await botClient.SendMessage(chatId, "Error al obtener la cotización. Por favor intenta más tarde.");
                     }
                     break;
+
 
                 default:
                     await botClient.AnswerCallbackQuery(callback.Id, "Opción desconocida");
@@ -119,28 +136,27 @@ public static class UpdateHandler
         return Task.CompletedTask;
     }
 
+
     private static async Task EnviarMensajeInicio(ITelegramBotClient botClient, long chatId)
     {
         var buttons = new[]
         {
-            new[]
-            {
-                InlineKeyboardButton.WithCallbackData("Activar automático", "activar"),
-                InlineKeyboardButton.WithCallbackData("Cancelar automático", "cancelar"),
-            },
-            new[]
-            {
-                InlineKeyboardButton.WithCallbackData("Cotización ahora", "dolar"),
-                InlineKeyboardButton.WithCallbackData("Inicio", "start"),
-            }
-        };
+        new[]
+        {
+            InlineKeyboardButton.WithCallbackData("Activar automático", "activar"),
+            InlineKeyboardButton.WithCallbackData("Cancelar automático", "cancelar"),
+        },
+        new[]
+        {
+            InlineKeyboardButton.WithCallbackData("Cotización ahora", "dolar"),
+            InlineKeyboardButton.WithCallbackData("Inicio", "start"),
+        }
+    };
 
-        var cotizacionService = new CotizacionService(botClient, null);
-        var cotizacion = await cotizacionService.ObtenerCotizacionAsync();
-
-        string texto = "Hola! Aquí está la cotización del dólar de hoy:\n\n";
-        texto += cotizacion != null ? CotizacionService.FormatearTextoCotizacion(cotizacion) : "No se pudo obtener la cotización en este momento.";
-        texto += "\n\nUsa los botones para activar o cancelar el mensaje automático.";
+        string texto =
+         "👋 *Bienvenido al Bot de Cotización del Dólar en Argentina.*\n\n" +
+         "Este bot te permite conocer la cotización actual del *dólar oficial* y del *dólar blue*.\n\n" +
+         "También podés activar notificaciones automáticas para recibir alertas cuando los valores se actualicen.";
 
         await botClient.SendMessage(
             chatId: chatId,
@@ -148,4 +164,5 @@ public static class UpdateHandler
             parseMode: ParseMode.Markdown,
             replyMarkup: new InlineKeyboardMarkup(buttons));
     }
+
 }

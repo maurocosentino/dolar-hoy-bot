@@ -42,7 +42,12 @@ public class CotizacionService
             {
                 _ultimaCotizacion = cotizacionNueva;
 
-                var texto = FormatearTextoCotizacion(cotizacionNueva);
+                // var texto = FormatearTextoCotizacion(cotizacionNueva, _ultimaCotizacion);
+                var texto =
+                         "Hola! Aquí está la cotización del dólar de hoy:\n\n" +
+                         FormatearTextoCotizacion(cotizacionNueva, _ultimaCotizacion) +
+                        "\n\nUsa los botones para activar o cancelar el mensaje automático.";
+
 
                 foreach (var chatId in _suscripciones.Suscripciones.Where(kv => kv.Value).Select(kv => kv.Key))
                 {
@@ -88,13 +93,25 @@ public class CotizacionService
         }
     }
 
-    public static string FormatearTextoCotizacion(CotizacionUltima cot)
+    public static string FormatearTextoCotizacion(CotizacionUltima cot, CotizacionUltima? anterior = null)
     {
-        return $"💵 *Cotización del dólar hoy en Argentina:*\n\n" +
-               $"📘 *Oficial*: Compra `{cot.OficialCompra}` - Venta `{cot.OficialVenta}`\n" +
-               $"📗 *Blue*: Compra `{cot.BlueCompra}` - Venta `{cot.BlueVenta}`\n\n" +
-               $"🕒 {DateTime.Now:dd/MM/yyyy HH:mm}";
+        string Flecha(decimal actual, decimal? previo) =>
+            previo == null ? "" :
+            actual > previo ? " 🔺" :
+            actual < previo ? " 🔻" : "➖";
+
+        return
+            $"💵 *Cotización del dólar hoy en Argentina:*\n\n" +
+            $"🏛️ *Dólar Oficial*\n" +
+            $"▪️ Compra: `${cot.OficialCompra}`{Flecha(cot.OficialCompra, anterior?.OficialCompra)}\n" +
+            $"▪️ Venta: `${cot.OficialVenta}`{Flecha(cot.OficialVenta, anterior?.OficialVenta)}\n\n" +
+            $"🔹 *Dólar Blue*\n" +
+            $"▪️ Compra: `${cot.BlueCompra}`{Flecha(cot.BlueCompra, anterior?.BlueCompra)}\n" +
+            $"▪️ Venta: `${cot.BlueVenta}`{Flecha(cot.BlueVenta, anterior?.BlueVenta)}\n\n" +
+            $"🕒 _Actualizado: {DateTime.Now:dd/MM/yyyy HH:mm}_";
     }
+
+
 }
 
 public class CotizacionUltima
@@ -118,3 +135,4 @@ public class CotizacionUltima
         return HashCode.Combine(OficialCompra, OficialVenta, BlueCompra, BlueVenta);
     }
 }
+
