@@ -1,11 +1,15 @@
-# Build stage
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY . .
+
+# Copiar sólo archivos del proyecto web para optimizar cache
+COPY BotCotizacionWeb/*.csproj ./BotCotizacionWeb/
+RUN dotnet restore BotCotizacionWeb/BotCotizacionWeb.csproj
+
+COPY BotCotizacionWeb/. ./BotCotizacionWeb/
+WORKDIR /src/BotCotizacionWeb
 RUN dotnet publish -c Release -o /app/publish
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "DolarHoyBot.dll"]
+ENTRYPOINT ["dotnet", "BotCotizacionWeb.dll"]

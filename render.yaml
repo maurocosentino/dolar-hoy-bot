@@ -1,11 +1,10 @@
 services:
-  - type: worker
-    name: telegram-bot
+  - type: web
+    name: bot-cotizacion-web
     runtime: docker
     plan: free
     autoDeploy: true
+    dockerfilePath: Dockerfile
     envVars:
       - key: BOT_TOKEN
-        sync: false
-      - key: CHAT_ID
         sync: false
