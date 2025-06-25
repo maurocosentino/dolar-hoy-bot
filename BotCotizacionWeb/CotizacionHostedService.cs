@@ -1,28 +1,47 @@
 ﻿using Microsoft.Extensions.Hosting;
-using System;
+using Microsoft.Extensions.DependencyInjection;
+using Telegram.Bot;
+using Telegram.Bot.Polling;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class CotizacionHostedService : BackgroundService
+public class CotizacionHostedService : IHostedService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly TimeSpan _intervalo = TimeSpan.FromMinutes(1);
+    private readonly IServiceProvider _services;
+    private ITelegramBotClient _bot;
+    private CancellationTokenSource _cts;
 
-    public CotizacionHostedService(IServiceScopeFactory scopeFactory)
+    public CotizacionHostedService(IServiceProvider services, ITelegramBotClient bot)
     {
-        _scopeFactory = scopeFactory;
+        _services = services;
+        _bot = bot;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            using var scope = _scopeFactory.CreateScope();
+        _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            var cotizacionService = scope.ServiceProvider.GetRequiredService<CotizacionService>();
-            await cotizacionService.ChequearYNotificarAsync();
+        // Crear un scope para obtener servicios scoped
+        var scope = _services.CreateScope();
+        var suscripciones = scope.ServiceProvider.GetRequiredService<SuscripcionesService>();
+        var cotizacionService = scope.ServiceProvider.GetRequiredService<CotizacionService>();
 
-            await Task.Delay(_intervalo, stoppingToken);
-        }
+        cotizacionService.IniciarChequeoCotizacion(TimeSpan.FromMinutes(1));
+
+        _bot.StartReceiving(
+            new DefaultUpdateHandler(
+                async (botClient, update, token) =>
+                    await UpdateHandler.HandleUpdateAsync(botClient, update, token, suscripciones, cotizacionService),
+                async (botClient, exception, token) =>
+                    await UpdateHandler.HandleErrorAsync(botClient, exception, token)),
+            cancellationToken: _cts.Token);
+
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        _cts.Cancel();
+        return Task.CompletedTask;
     }
 }
