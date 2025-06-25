@@ -26,19 +26,19 @@ public static class UpdateHandler
                     break;
 
                 case "/activar":
-                    if (suscripcionesService.EstaActivo(chatId))
+                    if (await suscripcionesService.EstaActivoAsync(chatId))
                     {
                         await botClient.SendMessage(chatId, "⚠️ El mensaje automático ya está ACTIVADO.", cancellationToken: token);
                     }
                     else
                     {
-                        suscripcionesService.Activar(chatId);
+                        await suscripcionesService.ActivarAsync(chatId);
                         await botClient.SendMessage(chatId, "✅ Mensaje automático diario ACTIVADO. Recibirás notificaciones cuando la cotización cambie.", cancellationToken: token);
                     }
                     break;
 
                 case "/cancelar":
-                    suscripcionesService.Cancelar(chatId);
+                    await suscripcionesService.CancelarAsync(chatId);
                     await botClient.SendMessage(chatId, "❌ Mensaje automático diario CANCELADO.", cancellationToken: token);
                     break;
 
@@ -51,7 +51,7 @@ public static class UpdateHandler
                         {
                             new[]
                             {
-                             InlineKeyboardButton.WithCallbackData("Inicio", "start")
+                                InlineKeyboardButton.WithCallbackData("Inicio", "start")
                             }
                         });
 
@@ -81,21 +81,21 @@ public static class UpdateHandler
                     break;
 
                 case "activar":
-                    if (suscripcionesService.EstaActivo(chatId))
+                    if (await suscripcionesService.EstaActivoAsync(chatId))
                     {
                         await botClient.AnswerCallbackQuery(callback.Id, "Ya está ACTIVADO");
                         await botClient.SendMessage(chatId, "⚠️ El mensaje automático ya está ACTIVADO.");
                     }
                     else
                     {
-                        suscripcionesService.Activar(chatId);
+                        await suscripcionesService.ActivarAsync(chatId);
                         await botClient.AnswerCallbackQuery(callback.Id, "Mensaje automático diario ACTIVADO");
                         await botClient.SendMessage(chatId, "✅ Mensaje automático diario ACTIVADO. Recibirás notificaciones cuando la cotización cambie.");
                     }
                     break;
 
                 case "cancelar":
-                    suscripcionesService.Cancelar(chatId);
+                    await suscripcionesService.CancelarAsync(chatId);
                     await botClient.AnswerCallbackQuery(callback.Id, "Mensaje automático diario CANCELADO");
                     await botClient.SendMessage(chatId, "❌ Mensaje automático diario CANCELADO.");
                     break;
@@ -122,7 +122,6 @@ public static class UpdateHandler
                     }
                     break;
 
-
                 default:
                     await botClient.AnswerCallbackQuery(callback.Id, "Opción desconocida");
                     break;
@@ -136,27 +135,26 @@ public static class UpdateHandler
         return Task.CompletedTask;
     }
 
-
     private static async Task EnviarMensajeInicio(ITelegramBotClient botClient, long chatId)
     {
         var buttons = new[]
         {
-        new[]
-        {
-            InlineKeyboardButton.WithCallbackData("Activar automático", "activar"),
-            InlineKeyboardButton.WithCallbackData("Cancelar automático", "cancelar"),
-        },
-        new[]
-        {
-            InlineKeyboardButton.WithCallbackData("Cotización ahora", "dolar"),
-            InlineKeyboardButton.WithCallbackData("Inicio", "start"),
-        }
-    };
+            new[]
+            {
+                InlineKeyboardButton.WithCallbackData("Activar automático", "activar"),
+                InlineKeyboardButton.WithCallbackData("Cancelar automático", "cancelar"),
+            },
+            new[]
+            {
+                InlineKeyboardButton.WithCallbackData("Cotización ahora", "dolar"),
+                InlineKeyboardButton.WithCallbackData("Inicio", "start"),
+            }
+        };
 
         string texto =
-         "👋 *Bienvenido al Bot de Cotización del Dólar en Argentina.*\n\n" +
-         "Este bot te permite conocer la cotización actual del *dólar oficial* y del *dólar blue*.\n\n" +
-         "También podés activar notificaciones automáticas para recibir alertas cuando los valores se actualicen.";
+            "👋 *Bienvenido al Bot de Cotización del Dólar en Argentina.*\n\n" +
+            "Este bot te permite conocer la cotización actual del *dólar oficial* y del *dólar blue*.\n\n" +
+            "También podés activar notificaciones automáticas para recibir alertas cuando los valores se actualicen.";
 
         await botClient.SendMessage(
             chatId: chatId,
@@ -164,5 +162,4 @@ public static class UpdateHandler
             parseMode: ParseMode.Markdown,
             replyMarkup: new InlineKeyboardMarkup(buttons));
     }
-
 }

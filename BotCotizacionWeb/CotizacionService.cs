@@ -29,7 +29,7 @@ public class CotizacionService
         _timer.Start();
     }
 
-    private async Task ChequearYNotificarAsync()
+    public async Task ChequearYNotificarAsync()
     {
         try
         {
@@ -40,18 +40,19 @@ public class CotizacionService
 
             if (_ultimaCotizacion == null || !cotizacionNueva.Equals(_ultimaCotizacion))
             {
-                var cotizacionAnterior = _ultimaCotizacion; // guardar antes de pisar
+                var cotizacionAnterior = _ultimaCotizacion;
                 _ultimaCotizacion = cotizacionNueva;
 
                 var texto =
                     "Hola! Aquí está la cotización del dólar de hoy:\n\n" +
-                    FormatearTextoCotizacion(cotizacionNueva, cotizacionAnterior) + // comparación real
+                    FormatearTextoCotizacion(cotizacionNueva, cotizacionAnterior) +
                     "\n\nUsa los botones para activar o cancelar el mensaje automático.";
 
+                var suscripcionesActivas = await _suscripciones.ObtenerSuscripcionesActivasAsync();
 
-
-                foreach (var chatId in _suscripciones.Suscripciones.Where(kv => kv.Value).Select(kv => kv.Key))
+                foreach (var suscripcion in suscripcionesActivas)
                 {
+                    long chatId = suscripcion.ChatId;
                     try
                     {
                         await _bot.SendMessage(chatId, texto, ParseMode.Markdown);
@@ -68,6 +69,7 @@ public class CotizacionService
             Console.WriteLine($"Error chequeando cotización: {ex.Message}");
         }
     }
+
 
     public async Task<CotizacionUltima?> ObtenerCotizacionAsync()
     {

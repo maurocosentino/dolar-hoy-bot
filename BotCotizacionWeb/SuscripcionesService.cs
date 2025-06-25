@@ -1,55 +1,58 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
+using System.Linq;
+using System.Threading.Tasks;
+using BotCotizacionWeb.Data;
+using Microsoft.EntityFrameworkCore;
 
 public class SuscripcionesService
 {
-    private const string ArchivoSuscripciones = "suscripciones.json";
+    private readonly AppDbContext _context;
 
-    public Dictionary<long, bool> Suscripciones { get; private set; }
-
-    public SuscripcionesService()
+    public SuscripcionesService(AppDbContext context)
     {
-        Suscripciones = CargarSuscripciones();
+        _context = context;
     }
 
-    public void Activar(long chatId)
+    public async Task ActivarAsync(long chatId)
     {
-        Suscripciones[chatId] = true;
-        GuardarSuscripciones();
-    }
-
-    public void Cancelar(long chatId)
-    {
-        Suscripciones[chatId] = false;
-        GuardarSuscripciones();
-    }
-
-    public bool EstaActivo(long chatId)
-    {
-        return Suscripciones.TryGetValue(chatId, out bool activo) && activo;
-    }
-
-    private void GuardarSuscripciones()
-    {
-        var json = JsonSerializer.Serialize(Suscripciones, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(ArchivoSuscripciones, json);
-    }
-
-    private Dictionary<long, bool> CargarSuscripciones()
-    {
-        if (!File.Exists(ArchivoSuscripciones))
-            return new Dictionary<long, bool>();
-
-        try
+        var suscripcion = await _context.Suscripciones.SingleOrDefaultAsync(s => s.ChatId == chatId);
+        if (suscripcion == null)
         {
-            string contenido = File.ReadAllText(ArchivoSuscripciones);
-            return JsonSerializer.Deserialize<Dictionary<long, bool>>(contenido) ?? new Dictionary<long, bool>();
+            suscripcion = new Suscripcion
+            {
+                ChatId = chatId,
+                Activo = true,
+                FechaSuscripcion = DateTime.UtcNow
+            };
+            await _context.Suscripciones.AddAsync(suscripcion);
         }
-        catch
+        else
         {
-            Console.WriteLine("⚠️ Error al leer suscripciones. Se iniciará vacío.");
-            return new Dictionary<long, bool>();
+            suscripcion.Activo = true;
+            _context.Suscripciones.Update(suscripcion);
         }
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task CancelarAsync(long chatId)
+    {
+        var suscripcion = await _context.Suscripciones.SingleOrDefaultAsync(s => s.ChatId == chatId);
+        if (suscripcion != null)
+        {
+            suscripcion.Activo = false;
+            _context.Suscripciones.Update(suscripcion);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task<bool> EstaActivoAsync(long chatId)
+    {
+        var suscripcion = await _context.Suscripciones.SingleOrDefaultAsync(s => s.ChatId == chatId);
+        return suscripcion != null && suscripcion.Activo;
+    }
+
+    public async Task<List<Suscripcion>> ObtenerSuscripcionesActivasAsync()
+    {
+        return await _context.Suscripciones.Where(s => s.Activo).ToListAsync();
     }
 }
