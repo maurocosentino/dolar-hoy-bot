@@ -1,5 +1,5 @@
 
-# 🤖 Bot del Dólar Argentino 🇦🇷
+# 🤖 Bot Cotización Dólar 🇦🇷
 
 Un bot simple de Telegram para consultar el valor del dólar oficial y blue en Argentina. También podés activar alertas para que te avise automáticamente cuando cambie el precio.
 
@@ -14,6 +14,9 @@ Un bot simple de Telegram para consultar el valor del dólar oficial y blue en A
 - 💾 Guarda tus preferencias en una base de datos
 - ☁️ Funciona 24/7 gratis en [Render.com](https://render.com)
 
+## 🌐 API de Cotización
+La cotización del dólar se obtiene de la API pública de Bluelytics (Argentina):
+https://api.bluelytics.com.ar/v2/latest
 ---
 
 ## 📦 Paquetes necesarios
@@ -140,11 +143,21 @@ Así el bot se mantiene activo sin dormir 😴
 
 ---
 
-## 📸 Vista previa
+## 🧠 Comandos del Bot y Funcionalidades
 
-🟢 `/start` → Te da la bienvenida y muestra opciones  
-📈 `Ver dólar ahora` → Muestra los valores con flechitas 🔺🔻  
-🔔 `/activar` → Activa notificaciones automáticas cuando cambia el dólar  
+| Comando / Acción        | Función                                                                 |
+|-------------------------|-------------------------------------------------------------------------|
+| `/start`                | Muestra un mensaje de bienvenida con los botones interactivos.         |
+| `/dolar`                | Muestra la cotización actual del dólar oficial y blue en Argentina.     |
+| `/activar`              | Activa el envío automático de alertas diarias si cambia la cotización. |
+| `/cancelar`             | Desactiva el envío automático de alertas.                              |
+| 🔘 `Activar automático` | (Botón) Equivalente al comando `/activar`.                             |
+| 🔘 `Cancelar automático`| (Botón) Equivalente al comando `/cancelar`.                            |
+| 🔘 `Cotización ahora`   | (Botón) Muestra la cotización actual del dólar.                        |
+| 🔘 `Inicio`             | (Botón) Vuelve al mensaje de inicio con todos los botones.             |
+
+> Todos los botones usan `callback_data`, por lo que no hace falta que el usuario escriba comandos manualmente.
+  
 
 ---
 
