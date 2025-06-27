@@ -45,7 +45,7 @@ public class CotizacionService
 
                 var texto =        
                     FormatearTextoAutomaticoCotizacion(cotizacionNueva, cotizacionAnterior) +
-                    "\n\nUsa los botones para activar o cancelar el mensaje automático.";
+                    "\n\nUsa los botones para activar o cancelar el mensaje automático.  /start";
 
                 var suscripcionesActivas = await _suscripciones.ObtenerSuscripcionesActivasAsync();
 
@@ -100,7 +100,7 @@ public class CotizacionService
         var ahoraAR = ObtenerFechaHoraArgentina();
 
         return
-            $"💵 *Cotización actual del dólar 🇦🇷*\n\n" +
+            $"💵 *Dólar en Argentina - Cotización Actual*\n\n" +
 
             $"📊 *Blue*\n" +
             $"   → Compra: `${cot.BlueCompra}` {Variacion(cot.BlueCompra, anterior?.BlueCompra)}\n" +
@@ -112,7 +112,7 @@ public class CotizacionService
 
             $"🕒 _Actualizado: {ahoraAR:dd/MM/yyyy}_";
     }
-    //correccion mensaje automatico
+    //corregir mensaje automatico
     public static string FormatearTextoAutomaticoCotizacion(CotizacionUltima cot, CotizacionUltima? anterior = null)
     {
         var ahoraAR = ObtenerFechaHoraArgentina();

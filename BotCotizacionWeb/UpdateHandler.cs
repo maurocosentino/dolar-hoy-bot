@@ -7,6 +7,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 public static class UpdateHandler
 {
+    private static readonly Dictionary<long, string> _esperandoConversion = new();
+
     public static async Task HandleUpdateAsync(
         ITelegramBotClient botClient,
         Telegram.Bot.Types.Update update,
@@ -18,6 +20,42 @@ public static class UpdateHandler
         {
             var chatId = update.Message.Chat.Id;
             var text = update.Message.Text.ToLower();
+
+            if (_esperandoConversion.TryGetValue(chatId, out var tipoConversion))
+            {
+                if (decimal.TryParse(text.Replace(",", "."), out decimal monto))
+                {
+                    var cotizacion = await cotizacionService.ObtenerCotizacionAsync();
+
+                    if (cotizacion == null)
+                    {
+                        await botClient.SendMessage(chatId, "⚠️ No se pudo obtener la cotización del dólar. Intentalo más tarde.", cancellationToken: token);
+                        return;
+                    }
+
+                    string respuesta;
+                    if (tipoConversion == "pesos-a-dolar")
+                    {
+                        var resultado = monto / cotizacion.BlueVenta;
+                        respuesta = $"🇦🇷 ${monto:N2} equivale a *USD {resultado:N2}* al dólar blue venta (${cotizacion.BlueVenta}).";
+                    }
+                    else // dolar-a-pesos
+                    {
+                        var resultado = monto * cotizacion.BlueVenta;
+                        respuesta = $"💵 USD {monto:N2} equivale a *${resultado:N2}* al dólar blue venta (${cotizacion.BlueVenta}).";
+                    }
+
+                    await botClient.SendMessage(chatId, respuesta, ParseMode.Markdown, cancellationToken: token);
+                }
+                else
+                {
+                    await botClient.SendMessage(chatId, "❌ Por favor ingresá un monto válido (solo números).", cancellationToken: token);
+                }
+
+                _esperandoConversion.Remove(chatId);
+                return;
+            }
+
 
             switch (text)
             {
@@ -47,15 +85,8 @@ public static class UpdateHandler
                     if (cotizacion != null)
                     {
                         var texto = CotizacionService.FormatearTextoCotizacion(cotizacion);
-                        var buttons = new InlineKeyboardMarkup(new[]
-                        {
-                            new[]
-                            {
-                                InlineKeyboardButton.WithCallbackData("Inicio", "start")
-                            }
-                        });
 
-                        await botClient.SendMessage(chatId, texto, ParseMode.Markdown, replyMarkup: buttons, cancellationToken: token);
+                        await botClient.SendMessage(chatId, texto, ParseMode.Markdown,cancellationToken: token);
                     }
                     else
                     {
@@ -106,21 +137,54 @@ public static class UpdateHandler
                     if (cotizacionCB != null)
                     {
                         var texto = CotizacionService.FormatearTextoCotizacion(cotizacionCB);
-                        var buttons = new InlineKeyboardMarkup(new[]
-                        {
-                            new[]
-                            {
-                                InlineKeyboardButton.WithCallbackData("Inicio", "start")
-                            }
-                        });
-
-                        await botClient.SendMessage(chatId, texto, ParseMode.Markdown, replyMarkup: buttons);
+                       
+                        await botClient.SendMessage(chatId, texto, ParseMode.Markdown);
                     }
                     else
                     {
                         await botClient.SendMessage(chatId, "Error al obtener la cotización. Por favor intenta más tarde.");
                     }
                     break;
+
+                case "pesos-a-dolar":
+                    await botClient.SendMessage(chatId, "💰 Ingresá el monto en *pesos argentinos* para convertir a dólar blue.", parseMode: ParseMode.Markdown);
+                    _esperandoConversion[chatId] = "pesos-a-dolar";
+                    break;
+
+                case "dolar-a-pesos":
+                    await botClient.SendMessage(chatId, "💵 Ingresá el monto en *dólares* que querés convertir a pesos (blue).", parseMode: ParseMode.Markdown);
+                    _esperandoConversion[chatId] = "dolar-a-pesos";
+                    break;
+                case "mostrar_conversor":
+                    await botClient.AnswerCallbackQuery(callback.Id);
+
+                    var conversionButtons = new InlineKeyboardMarkup(new[]
+                    {
+                    new[]
+                    {   
+                        InlineKeyboardButton.WithCallbackData("Convertir ARS → Blue", "pesos-a-dolar"),
+                        InlineKeyboardButton.WithCallbackData("Convertir Blue → ARS", "dolar-a-pesos")
+                    },
+                    new[]
+                    {
+                        InlineKeyboardButton.WithCallbackData("🔙 Volver al inicio", "start")
+                    }
+                    });
+
+                    string conversionTexto =
+                        "💱 *Conversor de Moneda*\n\n" +
+                        "Seleccioná una opción para ingresar el monto a convertir:\n\n" +
+                        "- ARS a Dólar Blue\n" +
+                        "- Dólar Blue a ARS";
+
+                    await botClient.SendMessage(
+                        chatId,
+                        conversionTexto,
+                        parseMode: ParseMode.Markdown,
+                        replyMarkup: conversionButtons
+                    );
+                    break;
+
 
                 default:
                     await botClient.AnswerCallbackQuery(callback.Id, "Opción desconocida");
@@ -139,22 +203,25 @@ public static class UpdateHandler
     {
         var buttons = new[]
         {
-            new[]
-            {
-                InlineKeyboardButton.WithCallbackData("Activar automático", "activar"),
-                InlineKeyboardButton.WithCallbackData("Cancelar automático", "cancelar"),
-            },
-            new[]
-            {
-                InlineKeyboardButton.WithCallbackData("Cotización ahora", "dolar"),
-                InlineKeyboardButton.WithCallbackData("Inicio", "start"),
-            }
-        };
+        new[]
+        {
+            InlineKeyboardButton.WithCallbackData("Activar automático", "activar"),
+            InlineKeyboardButton.WithCallbackData("Cancelar automático", "cancelar"),
+        },
+        new[]
+        {
+            InlineKeyboardButton.WithCallbackData("💱 Convertir", "mostrar_conversor"),
+            InlineKeyboardButton.WithCallbackData("📊 Cotización ahora", "dolar"),
+        }
+    };
 
         string texto =
-            "👋 *Bienvenido al Bot de Cotización del Dólar en Argentina.*\n\n" +
-            "Este bot te permite conocer la cotización actual del *dólar oficial* y del *dólar blue*.\n\n" +
-            "También podés activar notificaciones automáticas para recibir alertas cuando los valores se actualicen.";
+            "👋 *Bienvenido/a al Bot de Cotización del Dólar en Argentina.*\n\n" +
+            "Este bot te permite:\n" +
+            "- Ver cotizaciones en tiempo real.\n" +
+            "- Convertir entre *ARS* y *Dólar Blue*.\n" +
+            "- Recibir actualizaciones automáticas.\n\n" +
+            "▶️ Usá los *botones* para interactuar. /start";
 
         await botClient.SendMessage(
             chatId: chatId,
