@@ -64,7 +64,7 @@ public static class CallbackHandler
                 break;
 
             case "dolar-a-pesos":
-                await botClient.SendMessage(chatId, "💵 Ingresá el monto en *dólares* que querés convertir a pesos (blue).", parseMode: ParseMode.Markdown);
+                await botClient.SendMessage(chatId, "💵 Ingresá el monto en *dólares* que querés convertir a *pesos argentinos*.", parseMode: ParseMode.Markdown);
                 MessageHandler.EsperandoConversion[chatId] = "dolar-a-pesos";
                 break;
 
@@ -74,20 +74,18 @@ public static class CallbackHandler
                 {
                     new[]
                     {
-                        InlineKeyboardButton.WithCallbackData("Convertir ARS → Blue", "pesos-a-dolar"),
-                        InlineKeyboardButton.WithCallbackData("Convertir Blue → ARS", "dolar-a-pesos")
+                        InlineKeyboardButton.WithCallbackData(" 💵 ARS a USD Blue", "pesos-a-dolar"),
+                        InlineKeyboardButton.WithCallbackData(" 💵 USD Blue a ARS", "dolar-a-pesos")
                     },
                     new[]
                     {
-                        InlineKeyboardButton.WithCallbackData("🔙 Volver al inicio", "start")
+                        InlineKeyboardButton.WithCallbackData("⬅️ Volver al inicio", "start")
                     }
                 });
 
                 string conversionTexto =
                     "💱 *Conversor de Moneda*\n\n" +
-                    "Seleccioná una opción para ingresar el monto a convertir:\n\n" +
-                    "- ARS a Dólar Blue\n" +
-                    "- Dólar Blue a ARS";
+                    "Seleccioná una opción para convertir:";
 
                 await botClient.SendMessage(
                     chatId,
