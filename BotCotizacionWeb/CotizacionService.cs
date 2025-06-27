@@ -112,7 +112,7 @@ public class CotizacionService
 
             $"🕒 _Actualizado: {ahoraAR:dd/MM/yyyy}_";
     }
-    //corregir mensaje automatico
+    //corregir mensaje automatico/
     public static string FormatearTextoAutomaticoCotizacion(CotizacionUltima cot, CotizacionUltima? anterior = null)
     {
         var ahoraAR = ObtenerFechaHoraArgentina();
