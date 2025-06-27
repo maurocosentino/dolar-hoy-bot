@@ -7,6 +7,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using System.Timers;
 using Timer = System.Timers.Timer;
+using BotCotizacionWeb.Utils;
 
 public class CotizacionService
 {
@@ -43,8 +44,8 @@ public class CotizacionService
                 var cotizacionAnterior = _ultimaCotizacion;
                 _ultimaCotizacion = cotizacionNueva;
 
-                var texto =        
-                    FormatearTextoAutomaticoCotizacion(cotizacionNueva, cotizacionAnterior) +
+                var texto =
+                    FormateoCotizacionUtils.FormatearTextoAutomaticoCotizacion(cotizacionNueva, cotizacionAnterior) +
                     "\n\nUsa los botones para activar o cancelar el mensaje automático.  /start";
 
                 var suscripcionesActivas = await _suscripciones.ObtenerSuscripcionesActivasAsync();
@@ -95,65 +96,6 @@ public class CotizacionService
         }
     }
 
-    public static string FormatearTextoCotizacion(CotizacionUltima cot, CotizacionUltima? anterior = null)
-    {
-        var ahoraAR = ObtenerFechaHoraArgentina();
-
-        return
-            $"💵 *Dólar en Argentina - Cotización Actual*\n\n" +
-
-            $"📊 *Blue*\n" +
-            $"   → Compra: `${cot.BlueCompra}` {Variacion(cot.BlueCompra, anterior?.BlueCompra)}\n" +
-            $"   → Venta: `${cot.BlueVenta}` {Variacion(cot.BlueVenta, anterior?.BlueVenta)}\n\n" +
-
-            $"🏦 *Oficial*\n" +
-            $"   → Compra: `${cot.OficialCompra}` {Variacion(cot.OficialCompra, anterior?.OficialCompra)}\n" +
-            $"   → Venta: `${cot.OficialVenta}` {Variacion(cot.OficialVenta, anterior?.OficialVenta)}\n\n" +
-
-            $"🕒 _Actualizado: {ahoraAR:dd/MM/yyyy}_";
-    }
-    //corregir mensaje automatico/
-    public static string FormatearTextoAutomaticoCotizacion(CotizacionUltima cot, CotizacionUltima? anterior = null)
-    {
-        var ahoraAR = ObtenerFechaHoraArgentina();
-
-        return
-            $"🔔 *Dólar Blue y Oficial (Argentina) - Cotización Automática*\n\n" +
-
-            $"📊 *Blue*\n" +
-            $"   → Compra: `${cot.BlueCompra}` {Variacion(cot.BlueCompra, anterior?.BlueCompra)}\n" +
-            $"   → Venta: `${cot.BlueVenta}` {Variacion(cot.BlueVenta, anterior?.BlueVenta)}\n\n" +
-
-            $"🏦 *Oficial*\n" +
-            $"   → Compra: `${cot.OficialCompra}` {Variacion(cot.OficialCompra, anterior?.OficialCompra)}\n" +
-            $"   → Venta: `${cot.OficialVenta}` {Variacion(cot.OficialVenta, anterior?.OficialVenta)}\n\n" +
-
-            $"⏰ *Actualizado:* {ahoraAR:dd/MM/yyyy HH:mm}";
-    }
-    private static string Variacion(decimal actual, decimal? previo)
-    {
-        if (previo == null || previo == 0) return "";
-        var variacion = ((actual - previo.Value) / previo.Value) * 100;
-        string simbolo = variacion > 0 ? "🔼" : variacion < 0 ? "🔽" : "➖";
-        return $"{simbolo} ({variacion:+0.0;-0.0;0.0}%)";
-    }
-
-
-    public static string Flecha(decimal actual, decimal? previo) =>
-           previo == null ? "" :
-           actual > previo ? " 🔺" :
-           actual < previo ? " 🔻" : "➖";
-
-
-    public static DateTime ObtenerFechaHoraArgentina()
-    {
-        string zonaId = OperatingSystem.IsWindows()
-            ? "Argentina Standard Time"
-            : "America/Argentina/Buenos_Aires";
-
-        var zonaAR = TimeZoneInfo.FindSystemTimeZoneById(zonaId);
-        return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaAR);
-    }
 }
 
 public class CotizacionUltima
