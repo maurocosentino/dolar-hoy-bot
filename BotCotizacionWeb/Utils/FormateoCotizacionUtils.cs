@@ -7,35 +7,32 @@
             var ahoraAR = HoraUtils.ObtenerFechaHoraArgentina();
 
             return
-                $"💵 *Dólar en Argentina - Cotización Actual*\n\n" +
+                $"💵 *Dólar Blue - Cotización Actual*\n\n" +
+                $"💸 → Compra: `${cot.BlueCompra}` {Variacion(cot.BlueCompra, anterior?.BlueCompra)}\n" +
+                $"💰 → Venta: `${cot.BlueVenta}` {Variacion(cot.BlueVenta, anterior?.BlueVenta)}\n\n" +
+                $"🔗 Fuente: [bluelytics.com.ar](https://bluelytics.com.ar)\n\n" +
+                $"📅 _{ahoraAR:dd/MM/yyyy}_";
 
-                $"📊 *Blue*\n" +
-                $"   → Compra: `${cot.BlueCompra}` {Variacion(cot.BlueCompra, anterior?.BlueCompra)}\n" +
-                $"   → Venta: `${cot.BlueVenta}` {Variacion(cot.BlueVenta, anterior?.BlueVenta)}\n\n" +
+                //$"🏦 *Oficial*\n" +
+                //$"   → Compra: `${cot.OficialCompra}` {Variacion(cot.OficialCompra, anterior?.OficialCompra)}\n" +
+                //$"   → Venta: `${cot.OficialVenta}` {Variacion(cot.OficialVenta, anterior?.OficialVenta)}\n\n" +
 
-                $"🏦 *Oficial*\n" +
-                $"   → Compra: `${cot.OficialCompra}` {Variacion(cot.OficialCompra, anterior?.OficialCompra)}\n" +
-                $"   → Venta: `${cot.OficialVenta}` {Variacion(cot.OficialVenta, anterior?.OficialVenta)}\n\n" +
-
-                $"🕒 _Actualizado: {ahoraAR:dd/MM/yyyy}_";
         }
-        //corregir mensaje automatico/
         public static string FormatearTextoAutomaticoCotizacion(CotizacionUltima cot, CotizacionUltima? anterior = null)
         {
             var ahoraAR = HoraUtils.ObtenerFechaHoraArgentina();
 
             return
-                $"🔔 *Dólar Blue y Oficial (Argentina) - Cotización Automática*\n\n" +
+                $"🔔 *Dólar Blue - Cotización Automática*\n\n" +
+                $"💸 → Compra: `${cot.BlueCompra}` {Variacion(cot.BlueCompra, anterior?.BlueCompra)}\n" +
+                $"💰 → Venta: `${cot.BlueVenta}` {Variacion(cot.BlueVenta, anterior?.BlueVenta)}\n\n" +
+                $"🔗 Fuente: [bluelytics.com.ar](https://bluelytics.com.ar)\n\n" +
+                $"📅 _{ahoraAR:dd/MM/yyyy HH:mm}_";
 
-                $"📊 *Blue*\n" +
-                $"   → Compra: `${cot.BlueCompra}` {Variacion(cot.BlueCompra, anterior?.BlueCompra)}\n" +
-                $"   → Venta: `${cot.BlueVenta}` {Variacion(cot.BlueVenta, anterior?.BlueVenta)}\n\n" +
+                //$"🏦 *Oficial*\n" +
+                //$"   → Compra: `${cot.OficialCompra}` {Variacion(cot.OficialCompra, anterior?.OficialCompra)}\n" +
+                //$"   → Venta: `${cot.OficialVenta}` {Variacion(cot.OficialVenta, anterior?.OficialVenta)}\n\n" +
 
-                $"🏦 *Oficial*\n" +
-                $"   → Compra: `${cot.OficialCompra}` {Variacion(cot.OficialCompra, anterior?.OficialCompra)}\n" +
-                $"   → Venta: `${cot.OficialVenta}` {Variacion(cot.OficialVenta, anterior?.OficialVenta)}\n\n" +
-
-                $"⏰ *Actualizado:* {ahoraAR:dd/MM/yyyy HH:mm}";
         }
         private static string Variacion(decimal actual, decimal? previo)
         {
@@ -44,11 +41,5 @@
             string simbolo = variacion > 0 ? "🔼" : variacion < 0 ? "🔽" : "➖";
             return $"{simbolo} ({variacion:+0.0;-0.0;0.0}%)";
         }
-
-
-        public static string Flecha(decimal actual, decimal? previo) =>
-               previo == null ? "" :
-               actual > previo ? " 🔺" :
-               actual < previo ? " 🔻" : "➖";
     }
 }
