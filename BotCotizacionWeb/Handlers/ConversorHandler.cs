@@ -28,19 +28,21 @@ public static class ConversorHandler
             if (tipoConversion == "pesos-a-dolar")
             {
                 var resultado = monto / cotizacion.BlueVenta;
-                respuesta = $"🇦🇷 ${monto:N2} equivale a *USD {resultado:N2}* al dólar blue venta (${cotizacion.BlueVenta}).";
+                respuesta = $"🇦🇷 ${monto:N2} equivale a *USD {resultado:N2}*\n\n _Dólar blue venta → (${cotizacion.BlueVenta})_\n\n_Para realizar otra conversión, escribí_ /convertir";
             }
             else // dolar-a-pesos
             {
-                var resultado = monto * cotizacion.BlueVenta;
-                respuesta = $"💵 USD {monto:N2} equivale a *${resultado:N2}* al dólar blue venta (${cotizacion.BlueVenta}).";
+                var resultado = monto * cotizacion.BlueCompra;
+                respuesta = $"💵 USD {monto:N2} equivale a *${resultado:N2}*\n\n_Dólar blue compra → (${cotizacion.BlueCompra})_\n\n_Para realizar otra conversión, escribí_ /convertir";
             }
 
             await botClient.SendMessage(chatId, respuesta, ParseMode.Markdown, cancellationToken: token);
         }
         else
         {
-            await botClient.SendMessage(chatId, "❌ Por favor ingresá un monto válido (solo números).", cancellationToken: token);
+            string respuesta;
+            respuesta = $"❌ Por favor ingresá un monto válido (solo números)\n\n_Para realizar otra conversión, escribí_ /convertir";
+            await botClient.SendMessage(chatId, respuesta, ParseMode.Markdown, cancellationToken: token);
         }
     }
 }

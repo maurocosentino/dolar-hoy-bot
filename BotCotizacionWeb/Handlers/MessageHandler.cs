@@ -50,6 +50,14 @@ public static class MessageHandler
                 }
                 break;
 
+            case "/menu":
+                await MensajeUtils.EnviarMensajeMenuPrincipal(botClient, chatId); // mensaje más corto, sin bienvenida
+                break;
+
+            case "/convertir":
+                await MensajeUtils.EnviarMensajeConversor(botClient, chatId);
+                break;
+
             case "/activar":
                 if (await suscripcionesService.EstaActivoAsync(chatId))
                 {
@@ -81,7 +89,7 @@ public static class MessageHandler
                 break;
 
             default:
-                await botClient.SendMessage(chatId, "No reconozco ese comando. Usa /start para ver opciones.", cancellationToken: token);
+                await botClient.SendMessage(chatId, "No reconozco ese comando. Usa /inicio para ver opciones.", cancellationToken: token);
                 break;
         }
     }

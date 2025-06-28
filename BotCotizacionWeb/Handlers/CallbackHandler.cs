@@ -24,6 +24,10 @@ public static class CallbackHandler
                 await MensajeUtils.EnviarMensajeInicio(botClient, chatId);
                 break;
 
+            case "menu":
+                await MensajeUtils.EnviarMensajeMenuPrincipal(botClient, chatId);
+                break;
+
             case "activar":
                 if (await suscripcionesService.EstaActivoAsync(chatId))
                 {
@@ -70,29 +74,9 @@ public static class CallbackHandler
 
             case "mostrar_conversor":
                 await botClient.AnswerCallbackQuery(callback.Id);
-                var conversionButtons = new InlineKeyboardMarkup(new[]
-                {
-                    new[]
-                    {
-                        InlineKeyboardButton.WithCallbackData(" 💵 ARS a USD Blue", "pesos-a-dolar"),
-                        InlineKeyboardButton.WithCallbackData(" 💵 USD Blue a ARS", "dolar-a-pesos")
-                    },
-                    new[]
-                    {
-                        InlineKeyboardButton.WithCallbackData("⬅️ Volver al inicio", "start")
-                    }
-                });
-
-                string conversionTexto =
-                    "💱 *Conversor de Moneda*\n\n" +
-                    "Seleccioná una opción para convertir:";
-
-                await botClient.SendMessage(
-                    chatId,
-                    conversionTexto,
-                    parseMode: ParseMode.Markdown,
-                    replyMarkup: conversionButtons);
+                await MensajeUtils.EnviarMensajeConversor(botClient, chatId);
                 break;
+
 
             default:
                 await botClient.AnswerCallbackQuery(callback.Id, "Opción desconocida");
