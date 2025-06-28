@@ -14,8 +14,21 @@ public static class ConversorHandler
         CotizacionService cotizacionService,
         CancellationToken token)
     {
-        if (decimal.TryParse(text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal monto))
+        string textoLimpio = text.Replace(".", "").Replace(",", ".");
+
+
+        string nuevaConversion = "_Para realizar otra conversión, escribí_ /convertir";
+
+        if (decimal.TryParse(textoLimpio, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal monto))
         {
+            if (monto <= 0)
+            {
+                await botClient.SendMessage(chatId,
+                    $"⚠️ Por favor ingresá un monto mayor a 0.",
+                    ParseMode.Markdown, cancellationToken: token);
+                return;
+            }
+
             var cotizacion = await cotizacionService.ObtenerCotizacionAsync();
 
             if (cotizacion == null)
@@ -28,20 +41,20 @@ public static class ConversorHandler
             if (tipoConversion == "pesos-a-dolar")
             {
                 var resultado = monto / cotizacion.BlueVenta;
-                respuesta = $"🇦🇷 ${monto:N2} equivale a *USD {resultado:N2}*\n\n _Dólar blue venta → (${cotizacion.BlueVenta})_\n\n_Para realizar otra conversión, escribí_ /convertir";
+                respuesta = $"🇦🇷 ${monto:N2} equivale a *USD {resultado:N2}*\n\n_Dólar blue venta → (${cotizacion.BlueVenta:N2})_\n\n{nuevaConversion}";
             }
-            else // dolar-a-pesos
+            else
             {
                 var resultado = monto * cotizacion.BlueCompra;
-                respuesta = $"💵 USD {monto:N2} equivale a *${resultado:N2}*\n\n_Dólar blue compra → (${cotizacion.BlueCompra})_\n\n_Para realizar otra conversión, escribí_ /convertir";
+                respuesta = $"💵 USD {monto:N2} equivale a *${resultado:N2}*\n\n_Dólar blue compra → (${cotizacion.BlueCompra:N2})_\n\n{nuevaConversion}";
             }
 
             await botClient.SendMessage(chatId, respuesta, ParseMode.Markdown, cancellationToken: token);
+            MessageHandler.EsperandoConversion.Remove(chatId);
         }
         else
         {
-            string respuesta;
-            respuesta = $"❌ Por favor ingresá un monto válido (solo números)\n\n_Para realizar otra conversión, escribí_ /convertir";
+            string respuesta = $"❌ Por favor ingresá un monto válido";
             await botClient.SendMessage(chatId, respuesta, ParseMode.Markdown, cancellationToken: token);
         }
     }

@@ -23,12 +23,18 @@ public static class MessageHandler
         var chatId = update.Message.Chat.Id;
         var text = update.Message.Text.ToLower();
 
+        //if (_esperandoConversion.TryGetValue(chatId, out var tipoConversion))
+        //{
+        //    await ConversorHandler.HandleConversorAsync(botClient, chatId, text, tipoConversion, cotizacionService, token);
+        //    _esperandoConversion.Remove(chatId);
+        //    return;
+        //}
         if (_esperandoConversion.TryGetValue(chatId, out var tipoConversion))
         {
             await ConversorHandler.HandleConversorAsync(botClient, chatId, text, tipoConversion, cotizacionService, token);
-            _esperandoConversion.Remove(chatId);
             return;
         }
+
 
         switch (text)
         {
