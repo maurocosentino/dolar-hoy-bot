@@ -95,7 +95,7 @@ public static class MessageHandler
                 break;
 
             default:
-                await botClient.SendMessage(chatId, "No reconozco ese comando. Usa /inicio para ver opciones.", cancellationToken: token);
+                await botClient.SendMessage(chatId, "No reconozco ese comando. Usa /menu para ver las opciones.", cancellationToken: token);
                 break;
         }
     }
