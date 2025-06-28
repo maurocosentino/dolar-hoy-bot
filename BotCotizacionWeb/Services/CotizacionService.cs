@@ -46,7 +46,7 @@ public class CotizacionService
 
                 var texto =
                     FormateoCotizacionUtils.FormatearTextoAutomaticoCotizacion(cotizacionNueva, cotizacionAnterior) +
-                    "\n\nUsa los botones para activar o cancelar el mensaje automático.  /start";
+                    "\n\nUsá los botones o /start para más opciones.";
 
                 var suscripcionesActivas = await _suscripciones.ObtenerSuscripcionesActivasAsync();
 
@@ -84,8 +84,6 @@ public class CotizacionService
 
             return new CotizacionUltima
             {
-                OficialCompra = oficial.GetProperty("value_buy").GetDecimal(),
-                OficialVenta = oficial.GetProperty("value_sell").GetDecimal(),
                 BlueCompra = blue.GetProperty("value_buy").GetDecimal(),
                 BlueVenta = blue.GetProperty("value_sell").GetDecimal()
             };
@@ -100,23 +98,22 @@ public class CotizacionService
 
 public class CotizacionUltima
 {
-    public decimal OficialCompra { get; set; }
-    public decimal OficialVenta { get; set; }
+    //public decimal OficialCompra { get; set; }
+    //public decimal OficialVenta { get; set; }
     public decimal BlueCompra { get; set; }
     public decimal BlueVenta { get; set; }
 
     public override bool Equals(object? obj)
     {
         if (obj is not CotizacionUltima other) return false;
-        return OficialCompra == other.OficialCompra
-            && OficialVenta == other.OficialVenta
-            && BlueCompra == other.BlueCompra
+        return
+             BlueCompra == other.BlueCompra
             && BlueVenta == other.BlueVenta;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(OficialCompra, OficialVenta, BlueCompra, BlueVenta);
+        return HashCode.Combine(BlueCompra, BlueVenta);
     }
     
 
