@@ -46,7 +46,7 @@ public class CotizacionService
 
                 var texto =
                     FormateoCotizacionUtils.FormatearTextoAutomaticoCotizacion(cotizacionNueva, cotizacionAnterior) +
-                    "\n\nUsá los botones o /start para más opciones.";
+                    "\n\nUsá los botones o /menu para más opciones.";
 
                 var suscripcionesActivas = await _suscripciones.ObtenerSuscripcionesActivasAsync();
 
