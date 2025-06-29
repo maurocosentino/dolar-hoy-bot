@@ -1,9 +1,11 @@
-
-# 🤖 Bot Cotización Dólar 🇦🇷
+# 🤖 DolarHoyBot — Cotización del dólar en Telegram 🇦🇷
 
 Un bot simple de Telegram para consultar el valor del dólar oficial y blue en Argentina. También podés activar alertas para que te avise automáticamente cuando cambie el precio.
 
+📲 Probalo en Telegram: [@DolarHoyBot](https://t.me/DolarHoyBot)  
 ![Render deploy](https://img.shields.io/badge/Render-Deploy-blue?logo=render)
+![.NET](https://img.shields.io/badge/.NET-8.0-blueviolet)
+![License](https://img.shields.io/github/license/maurocosentino/dolar-hoy-bot)
 
 ---
 
@@ -14,14 +16,16 @@ Un bot simple de Telegram para consultar el valor del dólar oficial y blue en A
 - 💾 Guarda tus preferencias en una base de datos
 - ☁️ Funciona 24/7 gratis en [Render.com](https://render.com)
 
-## 🌐 API de Cotización
-La cotización del dólar se obtiene de la API pública de Bluelytics (Argentina):
-https://api.bluelytics.com.ar/v2/latest
 ---
 
-## 📦 Paquetes necesarios
+## 🌐 Fuente de datos
 
-Este proyecto utiliza los siguientes paquetes NuGet:
+La cotización del dólar se obtiene de la API pública de Bluelytics (Argentina):  
+📡 https://api.bluelytics.com.ar/v2/latest
+
+---
+
+## 📦 Paquetes NuGet necesarios
 
 ```xml
 <ItemGroup>
@@ -37,12 +41,12 @@ Este proyecto utiliza los siguientes paquetes NuGet:
 
 ### 🛠️ Cómo agregarlos:
 
-**Opción 1 - Manual:**  
+**Opción 1 - Manual**  
 1. Abrí `BotCotizacionWeb.csproj`  
 2. Pegá los paquetes dentro de `<ItemGroup>`  
 3. Guardá los cambios
 
-**Opción 2 - Terminal:**
+**Opción 2 - Terminal**
 ```bash
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite --version 9.0.6
 dotnet add package Microsoft.EntityFrameworkCore.Design --version 9.0.6
@@ -52,10 +56,10 @@ dotnet add package Telegram.Bot --version 22.5.1
 
 ---
 
-## 🧱 Estructura del proyecto
+## 📂 Estructura del proyecto
 
 ```
-DolarHoyBot/
+dolar-hoy-bot/
 ├── BotCotizacionWeb/       # Código principal del bot
 │   ├── Program.cs          # Punto de entrada
 │   ├── CotizacionService.cs # Lógica para obtener precios del dólar
@@ -71,7 +75,7 @@ DolarHoyBot/
 
 - ✅ [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download)
 - ✅ Cuenta gratuita en [Render.com](https://render.com)
-- ✅ Token de Telegram (conseguilo usando [@BotFather](https://t.me/BotFather))
+- ✅ Token de Telegram (usá [@BotFather](https://t.me/BotFather))
 
 ---
 
@@ -79,11 +83,11 @@ DolarHoyBot/
 
 1. Cloná el repo:
 ```bash
-git clone https://github.com/tuusuario/DolarHoyBot.git
-cd DolarHoyBot
+git clone https://github.com/maurocosentino/dolar-hoy-bot.git
+cd dolar-hoy-bot
 ```
 
-2. Creá `appsettings.Development.json` con tu token:
+2. Creá `appsettings.Development.json` dentro de `BotCotizacionWeb`:
 ```json
 {
   "Telegram": {
@@ -124,12 +128,12 @@ BOT_TOKEN=ACA_PONE_TU_TOKEN
 
 ---
 
-## ⏳ ¿Cómo mantenerlo activo todo el día (gratis)?
+## ⏳ Mantenerlo activo todo el día (gratis)
 
 Render puede pausar servicios gratuitos si no se usan. Para evitarlo:
 
 - El bot tiene una ruta especial: `/ping`
-- Usá [UptimeRobot](https://uptimerobot.com) (gratis) para "pinguear" cada 10 minutos
+- Usá [UptimeRobot](https://uptimerobot.com) (gratis) para "pinguear" esa ruta cada 10 minutos
 
 Así el bot se mantiene activo sin dormir 😴
 
@@ -139,7 +143,7 @@ Así el bot se mantiene activo sin dormir 😴
 
 - Escucha mensajes constantemente (polling)
 - **No** usa webhooks
-- ⚠️ Solo una instancia debe estar activa (local o Render, no ambas)
+- ⚠️ Solo una instancia debe estar activa (local o en Render, no ambas)
 
 ---
 
@@ -148,23 +152,48 @@ Así el bot se mantiene activo sin dormir 😴
 | Comando / Acción        | Función                                                                 |
 |-------------------------|-------------------------------------------------------------------------|
 | `/start`                | Muestra un mensaje de bienvenida con los botones interactivos.         |
-| `/dolar`                | Muestra la cotización actual del dólar oficial y blue en Argentina.     |
-| `/activar`              | Activa el envío automático de alertas diarias si cambia la cotización. |
+| `/dolar`                | Muestra la cotización actual del dólar oficial y blue.                 |
+| `/activar`              | Activa alertas automáticas si cambia la cotización.                   |
 | `/cancelar`             | Desactiva el envío automático de alertas.                              |
-| 🔘 `Activar automático` | (Botón) Equivalente al comando `/activar`.                             |
-| 🔘 `Cancelar automático`| (Botón) Equivalente al comando `/cancelar`.                            |
-| 🔘 `Cotización ahora`   | (Botón) Muestra la cotización actual del dólar.                        |
-| 🔘 `Inicio`             | (Botón) Vuelve al mensaje de inicio con todos los botones.             |
+| 🔘 `Activar automático` | (Botón) Equivale a `/activar`.                                         |
+| 🔘 `Cancelar automático`| (Botón) Equivale a `/cancelar`.                                        |
+| 🔘 `Cotización ahora`   | (Botón) Muestra la cotización actual.                                  |
+| 🔘 `Inicio`             | (Botón) Muestra todos los botones principales.                         |
 
 > Todos los botones usan `callback_data`, por lo que no hace falta que el usuario escriba comandos manualmente.
-  
 
 ---
 
 ## ⚠️ Tips útiles
 
-- Si no anda local, apagá la instancia en Render
-- Render gratis tiene límites de uso (CPU, RAM, red)
+- Si no funciona localmente, asegurate de que la instancia en Render esté detenida
+- Render en su plan gratuito tiene límites de CPU, RAM y tráfico
+
+---
+
+## 🖼️ Capturas de pantalla
+
+### 1. Información general
+![info](assets/info.jpg)
+
+### 2. Inicio del bot
+![start](assets/Start.jpg)
+
+### 3. Activación de mensaje automático
+![activar](assets/Activar-DesactivarMensaje.jpg)
+
+### 4. Desactivación de mensaje automático
+![desactivar](assets/CotizacionActual.jpg)
+
+### 5. Cotización actual del dólar blue
+![cotizacion](assets/ConversorMoneda.jpg)
+
+---
+
+## 📄 Licencia
+
+Este proyecto está bajo la licencia MIT.  
+Ver [LICENSE](./LICENSE) para más información.
 
 ---
 
