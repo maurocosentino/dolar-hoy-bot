@@ -174,19 +174,16 @@ Así el bot se mantiene activo sin dormir 😴
 
 ## 🖼️ Capturas de pantalla
 
-### 1. Información general
-![info](assets/info.jpg)
-
-### 2. Inicio del bot
+### 1. Inicio del bot
 ![start](assets/Start.jpg)
 
-### 3. Activación de mensaje automático
+### 2. Activar/Desactivar mensaje automático
 ![activar](assets/Activar-DesactivarMensaje.jpg)
 
-### 4. Desactivación de mensaje automático
+### 3. Cotización actual del dólar blue
 ![desactivar](assets/CotizacionActual.jpg)
 
-### 5. Cotización actual del dólar blue
+### 4. Conversor de Moneda /convertir 
 ![cotizacion](assets/ConversorMoneda.jpg)
 
 ---
