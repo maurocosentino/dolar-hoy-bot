@@ -2,7 +2,8 @@
 
 Un bot simple de Telegram para consultar el valor del dólar blue. También podés activar alertas para que te avise automáticamente cuando cambie el precio.
 
-📲 Probalo en Telegram: [@DolarBlueInfo_Bot](t.me/DolarBlueInfo_Bot)  
+📲 [@DolarBlueInfo_Bot](https://t.me/DolarBlueInfo_Bot)
+  
 ![Render deploy](https://img.shields.io/badge/Render-Deploy-blue?logo=render)
 ![.NET](https://img.shields.io/badge/.NET-8.0-blueviolet)
 ![License](https://img.shields.io/github/license/maurocosentino/dolar-hoy-bot)
