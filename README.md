@@ -1,6 +1,6 @@
-# 🤖 DolarHoyBot — Cotización del dólar en Telegram 🇦🇷
+# 🤖 Dolar Blue Bot — Cotización del dólar en Telegram 🇦🇷
 
-Un bot simple de Telegram para consultar el valor del dólar oficial y blue en Argentina. También podés activar alertas para que te avise automáticamente cuando cambie el precio.
+Un bot simple de Telegram para consultar el valor del dólar blue. También podés activar alertas para que te avise automáticamente cuando cambie el precio.
 
 📲 Probalo en Telegram: [@DolarHoyBot](https://t.me/DolarHoyBot)  
 ![Render deploy](https://img.shields.io/badge/Render-Deploy-blue?logo=render)
@@ -11,7 +11,7 @@ Un bot simple de Telegram para consultar el valor del dólar oficial y blue en A
 
 ## 💡 ¿Qué hace?
 
-- 📈 Muestra el valor del dólar oficial y blue
+- 📈 Muestra el valor del dólar blue
 - 🔔 Envía alertas cuando el precio cambia (si activás las notificaciones)
 - 💾 Guarda tus preferencias en una base de datos
 - ☁️ Funciona 24/7 gratis en [Render.com](https://render.com)
@@ -91,7 +91,7 @@ cd dolar-hoy-bot
 ```json
 {
   "Telegram": {
-    "BotToken": "ACA_PONE_TU_TOKEN"
+    "BotToken": "TU_TOKEN"
   }
 }
 ```
@@ -121,7 +121,7 @@ Start Command: dotnet BotCotizacionWeb.dll
 
 4. Agregá la variable de entorno:
 ```
-BOT_TOKEN=ACA_PONE_TU_TOKEN
+BOT_TOKEN=TU_TOKEN
 ```
 
 ¡Listo! El bot va a ejecutarse automáticamente.
@@ -152,7 +152,7 @@ Así el bot se mantiene activo sin dormir 😴
 | Comando / Acción        | Función                                                                 |
 |-------------------------|-------------------------------------------------------------------------|
 | `/start`                | Muestra un mensaje de bienvenida con los botones interactivos.         |
-| `/dolar`                | Muestra la cotización actual del dólar oficial y blue.                 |
+| `/dolar`                | Muestra la cotización actual del dólar blue.                 |
 | `/activar`              | Activa alertas automáticas si cambia la cotización.                   |
 | `/cancelar`             | Desactiva el envío automático de alertas.                              |
 | 🔘 `Activar automático` | (Botón) Equivale a `/activar`.                                         |
